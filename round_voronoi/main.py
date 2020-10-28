@@ -93,6 +93,7 @@ def run() -> None:
 
         for polygon in polygons:
             pygame.draw.line(window, POLYGON_COLOR, polygon[0], polygon[1])
+        # NOTE: The polygons at the screen edges will be open.
         #     pygame.draw.aalines(
         #         window,
         #         POLYGON_COLOR,
