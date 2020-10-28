@@ -2,10 +2,13 @@ import numpy
 from typing import List, Tuple
 import scipy.spatial
 
+
 import pygame
 
 
 WINDOW_SIZE = (1200, 800)
+WINDOW_DIAGONAL = numpy.hypot(*WINDOW_SIZE)
+WINDOW_RECT = pygame.Rect((0, 0), WINDOW_SIZE)
 FPS = 60
 BACKGROUND_COLOR = pygame.Color(0, 32, 0)
 CIRCLE_COLOR = pygame.Color(0, 96, 255)
@@ -13,30 +16,31 @@ CIRCLE_RADIUS = 5
 POLYGON_COLOR = pygame.Color(255, 128, 0)
 
 
-def generate_voronoi_polygons(points: List[Tuple[int, int]]) -> Tuple[Tuple[float, float]]:
+def generate_voronoi_polygons(points: List[Tuple[int, int]]) -> List[Tuple[float, float]]:
     # see voronoi_plot_2d() in
     # https://github.com/scipy/scipy/blob/master/scipy/spatial/_plotutils.py
     # for how to plot the voronoi information
+    #
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Voronoi.html
 
+    # scipy.spatial.Voronoi() does not work with less than 3 points.
     if len(points) < 3:
-        return tuple()
+        return []
     vor = scipy.spatial.Voronoi(numpy.array(points))
-    print(vor.regions)
 
     # FIXME: This is just copied from https://github.com/scipy/scipy/blob/master/scipy/spatial/_plotutils.py
     #  Make it return the polygons surrounding the regions instead.
     #  Test by filling the polygons in different colors.
 
     center = vor.points.mean(axis=0)
-    ptp_bound = vor.points.ptp(axis=0)
-    finite_segments = []
-    infinite_segments = []
+    segments = []
+    vor.ridge_vertices = numpy.asarray(vor.ridge_vertices)
     for pointidx, simplex in zip(vor.ridge_points, vor.ridge_vertices):
-        simplex = numpy.asarray(simplex)
         if numpy.all(simplex >= 0):
-            finite_segments.append(vor.vertices[simplex])
+            segments.append(vor.vertices[simplex])
         else:
             i = simplex[simplex >= 0][0]  # finite end Voronoi vertex
+            near_point = vor.vertices[i]
 
             t = vor.points[pointidx[1]] - vor.points[pointidx[0]]  # tangent
             t /= numpy.linalg.norm(t)
@@ -44,24 +48,22 @@ def generate_voronoi_polygons(points: List[Tuple[int, int]]) -> Tuple[Tuple[floa
 
             midpoint = vor.points[pointidx].mean(axis=0)
             direction = numpy.sign(numpy.dot(midpoint - center, n)) * n
-            if vor.furthest_site:
-                direction = -direction
-            far_point = vor.vertices[i] + direction * ptp_bound.max()
+            far_point = near_point + direction * WINDOW_DIAGONAL
 
-            infinite_segments.append([vor.vertices[i], far_point])
+            segments.append((near_point, far_point))
 
-    return finite_segments + infinite_segments
+    return segments
 
 
 def run() -> None:
     pygame.init()
     window = pygame.display.set_mode(WINDOW_SIZE)
-    pygame.display.set_caption("round voronoi")
+    pygame.display.set_caption("art: round voronoi")
     clock = pygame.time.Clock()
     points = []
 
-    # # DEBUG
-    debug_points = [(304, 221), (806, 205), (804, 592), (333, 587), (562, 383)]
+    # DEBUG
+    debug_points = [(300, 200), (800, 100), (800, 700), (200, 600), (600, 400)]
     for p in debug_points:
         points.append(p)
     polygons = generate_voronoi_polygons(points)
