@@ -1,4 +1,6 @@
-pygame==2.0.0.dev24
+pygame>=2
 mypy
 numpy
 scipy
+Shapely
+geovoronoi
