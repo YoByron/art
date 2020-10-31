@@ -1,0 +1,18 @@
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Voronoi.html
+
+https://www.reddit.com/r/creativecoding/comments/j6ol1a/dann_hebt_er_ab_und/
+draw lines connecting neighboring points
+
+https://stackoverflow.com/questions/20515554/colorize-voronoi-diagram
+
+Polygons need to be re-calculated every frame. Need to find a way to make it
+run fast with many points. More Numpy? Will try scipy.spatial.Voronoi again.
+The bottleneck at the moment is the generation of the voronoi and the polygons.
+Not the plotting or the corner cutting.
+
+Apply some noise to the cut_ratio and draw the polygons with alpha
+to give them a fuzzy edge.
+
+Make a version that returns open polygons for points at the outer edge.
+
+Make sped dependent on current distance to center.
