@@ -1,6 +1,12 @@
 # TODO: Apply some noise to the cut_ratio and draw the polygons with alpha
 #  to give them a fuzzy edge.
 
+import os
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+
+import sys
+sys.path.append(os.getcwd())
+
 import pygame
 
 from helpers import corner_cutter
