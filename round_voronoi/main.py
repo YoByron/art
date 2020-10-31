@@ -16,7 +16,7 @@ from helpers import voronoi
 WINDOW_SIZE = (1200, 800)
 WINDOW_POLYGON = voronoi.rect_to_shapely_polygon(pygame.Rect((0, 0), WINDOW_SIZE))
 FPS = 60
-BACKGROUND_COLOR = pygame.Color(0, 32, 0)
+BACKGROUND_COLOR = pygame.Color(32, 32, 32)
 CIRCLE_COLOR = pygame.Color(255, 128, 0)
 CIRCLE_RADIUS = 5
 LINE_WIDTH = 3
