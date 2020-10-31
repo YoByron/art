@@ -1,4 +1,5 @@
-import numpy
+# TODO: Apply some noise to the cut_ratio and draw the polygons with alpha
+#  to give them a fuzzy edge.
 
 import pygame
 
@@ -7,14 +8,15 @@ from helpers import voronoi
 
 
 WINDOW_SIZE = (1200, 800)
-WINDOW_DIAGONAL = numpy.hypot(*WINDOW_SIZE)
 WINDOW_POLYGON = voronoi.rect_to_shapely_polygon(pygame.Rect((0, 0), WINDOW_SIZE))
 FPS = 60
 BACKGROUND_COLOR = pygame.Color(0, 32, 0)
-CIRCLE_COLOR = pygame.Color(128, 96, 0)
+CIRCLE_COLOR = pygame.Color(255, 128, 0)
 CIRCLE_RADIUS = 5
-LINE_WIDTH = 0
-POLYGON_COLOR = pygame.Color(32, 128, 32)
+LINE_WIDTH = 3
+DRAW_OUTLINES = True
+POLYGON_FILL_COLOR = pygame.Color(32, 128, 32)
+POLYGON_LINE_COLOR = pygame.Color(0, 255, 255)
 CUT_RATIO = 0.15
 CUT_ITERATIONS = 4
 
@@ -51,7 +53,9 @@ def run() -> None:
 
         window.fill(BACKGROUND_COLOR)
         for polygon in polygons:
-            pygame.draw.polygon(window, POLYGON_COLOR, polygon, LINE_WIDTH)
+            pygame.draw.polygon(window, POLYGON_FILL_COLOR, polygon)
+            if DRAW_OUTLINES:
+                pygame.draw.polygon(window, POLYGON_LINE_COLOR, polygon, LINE_WIDTH)
         for point in points:
             pygame.draw.circle(window, CIRCLE_COLOR, point, CIRCLE_RADIUS)
         pygame.display.flip()
