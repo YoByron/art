@@ -2,5 +2,3 @@ pygame>=2
 mypy
 numpy
 scipy
-Shapely
-geovoronoi

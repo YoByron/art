@@ -6,9 +6,17 @@ draw lines connecting neighboring points
 https://stackoverflow.com/questions/20515554/colorize-voronoi-diagram
 
 Polygons need to be re-calculated every frame. Need to find a way to make it
-run fast with many points. More Numpy? Will try scipy.spatial.Voronoi again.
-The bottleneck at the moment is the generation of the voronoi and the polygons.
-Not the plotting or the corner cutting.
+run fast with many points. More Numpy?
+The trick with the four extra points far away works, but produced big polygons
+which are slow to plot (filled). Maybe it would be worth it to not add the
+four corners and instead calculate the endpoints myself which would reduce
+the size of the outer polygons. That would also make the outer polygons look
+like they are closed (only visible when corner cutting).
+
+First calculate all lines where one end is at infinity (-1).
+Then go through the regions and build one polygon for each region.
+Then maybe sort the vertices in the polygons if they are not sorted?
+Close the outer polygons? Repair polygons at the four corners of the window?
 
 Apply some noise to the cut_ratio and draw the polygons with alpha
 to give them a fuzzy edge.
