@@ -15,4 +15,6 @@ to give them a fuzzy edge.
 
 Make a version that returns open polygons for points at the outer edge.
 
-Make sped dependent on current distance to center.
+Make sped dependent on current distance to center. For this the move_vectors
+must update every frame based on the current position. Or just mulitply by
+constant acceleration.

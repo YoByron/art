@@ -19,9 +19,10 @@ WINDOW_RECT = pygame.Rect((0, 0), WINDOW_SIZE)
 WINDOW_POLYGON = voronoi.rect_to_shapely_polygon(WINDOW_RECT)
 FPS = 60
 BACKGROUND_COLOR = pygame.Color(0, 255, 255)
-CIRCLE_COLOR = pygame.Color(255, 0, 0)
+CIRCLE_COLOR = pygame.Color(0, 255, 255)
 CIRCLE_RADIUS = 5
 LINE_WIDTH = 3
+BORDER_WIDTH = 10
 DRAW_OUTLINES = True
 POLYGON_FILL_COLOR = pygame.Color(32, 32, 32)
 POLYGON_LINE_COLOR = pygame.Color(0, 255, 255)
@@ -48,7 +49,6 @@ def run() -> None:
     font.fgcolor = pygame.Color(255, 255, 255)
     font.bgcolor = POLYGON_FILL_COLOR
     points = []
-    polygons = []
     move_vectors = []
 
     # DEBUG:
@@ -77,15 +77,15 @@ def run() -> None:
                         points.append((x, y))
                         move_vectors.append(get_move_vector((x, y)))
 
-        keep = []
-        for i, (p, mv) in enumerate(zip(points, move_vectors)):
+        for i, (p, mv) in reversed(list(enumerate(zip(points, move_vectors)))):
+            # Iterate backwards because the lengths change while iterating.
             x = p[0] + (mv[0] * dt)
             y = p[1] + (mv[1] * dt)
-            points[i] = (x, y)
             if WINDOW_RECT.collidepoint(x, y):
-                keep.append(i)
-        points = [points[i] for i in keep]
-        move_vectors = [move_vectors[i] for i in keep]
+                points[i] = (x, y)
+            else:
+                del points[i]
+                del move_vectors[i]
 
         polygons = voronoi.generate_voronoi_polygons(
             points,
@@ -96,14 +96,18 @@ def run() -> None:
             for polygon in polygons
         ]
 
-        window.fill(BACKGROUND_COLOR)
+        if len(points) > 2:
+            window.fill(BACKGROUND_COLOR)
+        else:
+            # Voronoi does not work with less than three points.
+            window.fill(POLYGON_FILL_COLOR)
         for polygon in polygons:
             pygame.draw.polygon(window, POLYGON_FILL_COLOR, polygon)
             if DRAW_OUTLINES:
                 pygame.draw.polygon(window, POLYGON_LINE_COLOR, polygon, LINE_WIDTH)
         for point in points:
             pygame.draw.circle(window, CIRCLE_COLOR, point, CIRCLE_RADIUS)
-        pygame.draw.rect(window, POLYGON_LINE_COLOR, WINDOW_RECT, LINE_WIDTH)
+        pygame.draw.rect(window, POLYGON_LINE_COLOR, WINDOW_RECT, BORDER_WIDTH)
 
         if SHOW_DEBUG_INFO:
             font.render_to(
