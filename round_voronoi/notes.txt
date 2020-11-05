@@ -12,6 +12,9 @@ which are slow to plot (filled). Maybe it would be worth it to not add the
 four corners and instead calculate the endpoints myself which would reduce
 the size of the outer polygons. That would also make the outer polygons look
 like they are closed (only visible when corner cutting).
+TODO: Is the slowness really caused by the filled polygons? Test:
+  - empty polygons
+  - blit big filled polygon on-screen vs. off-screen.
 
 First calculate all lines where one end is at infinity (-1).
 Then go through the regions and build one polygon for each region.
