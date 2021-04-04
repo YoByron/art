@@ -58,16 +58,15 @@ def run() -> None:
     points = [(left, top), (right, top), (right, bottom), (left, bottom)]
     move_vectors = [get_move_vector(p) for p in points]
 
-    running = True
-    while running:
+    while True:
         dt = clock.tick(FPS) / 1000
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                return
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    running = False
+                    return
                 elif event.key == pygame.K_F1:
                     show_debug_info = not show_debug_info
             elif event.type == pygame.MOUSEBUTTONDOWN:
