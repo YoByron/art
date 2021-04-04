@@ -1,12 +1,12 @@
 from typing import List, Tuple
 
 import scipy.spatial
-import numpy
+import numpy as np
 import pygame
 
 
 def get_voronoi_polygons(points: List[Tuple[int, int]]) -> List[List[pygame.math.Vector2]]:
-    vor = scipy.spatial.Voronoi(numpy.asarray(points))
+    vor = scipy.spatial.Voronoi(np.asarray(points))
     vertices = [pygame.Vector2(*v) for v in vor.vertices]
     polygons = []
     for region in vor.regions:
