@@ -82,14 +82,16 @@ def run() -> None:
                         points.append((x, y))
                         move_vectors.append(get_move_vector((x, y)))
 
-        for i, (p, mv) in reversed(list(enumerate(zip(points, move_vectors)))):
+        for i in range(len(points)-1, 3, -1):
             # Iterate backwards because the lengths change while iterating.
+            # Go down to i = 4 to not delete the 4 additional corner points
+            p = points[i]
+            mv = move_vectors[i]
             x = p[0] + (mv[0] * dt)
             y = p[1] + (mv[1] * dt)
             if WINDOW_RECT.collidepoint(x, y):
                 points[i] = (x, y)
-            elif i > 3:
-                # > 3 to not delete the 4 additional corner points
+            else:
                 del points[i]
                 del move_vectors[i]
 
