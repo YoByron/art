@@ -31,14 +31,14 @@ SPREAD = 50
 NUM_CIRCLES_PER_RIGHT_CLICK = 50
 
 
-def get_move_vector(point: Tuple[int, int]) -> Tuple[float, float]:
+def get_move_vector(point: Tuple[int, int]) -> pygame.Vector2:
     dx = point[0] - WINDOW_RECT.centerx
     dy = point[1] - WINDOW_RECT.centery
     length = math.hypot(dx, dy) / SPEED_MODIFIER
     if length > 0:
-        return dx / length, dy / length
+        return pygame.Vector2(dx / length, dy / length)
     else:
-        return SPEED_MODIFIER, SPEED_MODIFIER
+        return pygame.Vector2(SPEED_MODIFIER, SPEED_MODIFIER)
 
 
 def run() -> None:
@@ -86,9 +86,9 @@ def run() -> None:
             # Iterate backwards because the lengths change while iterating.
             # Go down to i = 4 to not delete the 4 additional corner points
             p = points[i]
-            mv = move_vectors[i]
-            x = p[0] + (mv[0] * dt)
-            y = p[1] + (mv[1] * dt)
+            mv = move_vectors[i] * dt
+            x = p[0] + mv.x
+            y = p[1] + mv.y
             if WINDOW_RECT.collidepoint(x, y):
                 points[i] = (x, y)
             else:
