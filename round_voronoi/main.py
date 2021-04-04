@@ -1,16 +1,13 @@
 import os
-import sys
-from typing import Tuple
+from typing import List, Tuple
 import math
 import random
+import numpy as np
+import scipy.spatial
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 import pygame.freetype
-
-sys.path.append(os.getcwd())
-from helpers import corner_cutter
-from helpers import voronoi
 
 
 WINDOW_SIZE = (1200, 800)
@@ -39,6 +36,50 @@ def get_move_vector(point: Tuple[int, int]) -> pygame.Vector2:
         return pygame.Vector2(dx / length, dy / length)
     else:
         return pygame.Vector2(SPEED_MODIFIER, SPEED_MODIFIER)
+
+
+def cut(points: List[pygame.math.Vector2],
+        ratio: float,
+        iterations: int = 1,
+        is_open: bool = False) -> List[pygame.math.Vector2]:
+    """ Chaikin's corner cutting algorithm.
+    ratio: Ratio (between 0 and 1) of the edge length which
+        determines how close to the corner the cut should be made.
+    iterations: Number of iterations of the cutting algorithm.
+    """
+    # Avoid cutting over the line midpoint:
+    if ratio > 0.5:
+        ratio = 1 - ratio
+
+    for _ in range(iterations):
+        new_points = []
+        n = len(points)
+        if is_open:
+            n -= 1
+        for i in range(n):
+            a = points[i]
+            b = points[(i + 1) % len(points)]
+            new_points.append(a.lerp(b, ratio))
+            new_points.append(b.lerp(a, ratio))
+
+        # For open polygons keep the original endpoints:
+        if is_open:
+            new_points[0] = points[0]
+            new_points[-1] = points[-1]
+
+        points = new_points
+
+    return points
+
+
+def get_voronoi_polygons(points: List[Tuple[int, int]]) -> List[List[pygame.math.Vector2]]:
+    vor = scipy.spatial.Voronoi(np.asarray(points))
+    vertices = [pygame.Vector2(*v) for v in vor.vertices]
+    polygons = []
+    for region in vor.regions:
+        if region and -1 not in region:
+            polygons.append([vertices[i] for i in region])
+    return polygons
 
 
 def run() -> None:
@@ -94,9 +135,9 @@ def run() -> None:
                 del points[i]
                 del move_vectors[i]
 
-        polygons = voronoi.get_voronoi_polygons(points)
+        polygons = get_voronoi_polygons(points)
         polygons = [
-            corner_cutter.cut(polygon, CUT_RATIO, CUT_ITERATIONS)
+            cut(polygon, CUT_RATIO, CUT_ITERATIONS)
             for polygon in polygons
         ]
 
