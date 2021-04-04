@@ -12,7 +12,7 @@ import pygame.freetype
 WINDOW_SIZE = (1200, 800)
 FPS = 60
 UPS = 20
-TIME_PER_UPDATE = 1 / UPS * 1000  # 1000 because dt is in milliseconds
+TIME_PER_UPDATE = 1 / UPS
 BACKGROUND_COLOR = pygame.Color(32, 64, 64)
 LINE_COLOR = pygame.Color(220, 220, 220)
 MARKER_COLOR = pygame.Color(255, 32, 32)
@@ -52,7 +52,7 @@ def run() -> None:
     #     pygame.draw.aaline(canvas, LINE_COLOR, INNER_POINTS[i % INNER_N], OUTER_POINTS[i % OUTER_N])
 
     while True:
-        dt = clock.tick(FPS)
+        dt = clock.tick(FPS) / 1000  # in seconds
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
