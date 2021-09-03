@@ -65,7 +65,7 @@ public class Bezier extends PApplet {
         // getCubicBezier(start, controlMouse, controlFixed, end, true, true);
     }
 
-    private PVector[] getQuadraticBezier(final PVector start, final PVector controlMouse, final PVector end,
+    private PVector[] getQuadraticBezier(final PVector start, final PVector control, final PVector end,
                                          final boolean drawNet, final boolean rainbow) {
         final PVector[] result = new PVector[T.length];
         if (rainbow) {
@@ -76,8 +76,8 @@ public class Bezier extends PApplet {
         }
         for (int i = 0; i < T.length; i++) {
             final float t = T[i];
-            final PVector p1 = PVector.lerp(start, controlMouse, t);
-            final PVector p2 = PVector.lerp(controlMouse, end, t);
+            final PVector p1 = PVector.lerp(start, control, t);
+            final PVector p2 = PVector.lerp(control, end, t);
             result[i] = PVector.lerp(p1, p2, t);
             if (drawNet) {
                 if (rainbow) {
