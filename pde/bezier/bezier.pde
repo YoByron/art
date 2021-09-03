@@ -10,7 +10,6 @@ PVector controlFixed;
 int offset = 10;
 int n_steps = 30;
 float[] t = new float[n_steps + 1];
-PVector[] intermediatePoints;
 
 
 void setup() {
@@ -28,7 +27,8 @@ void setup() {
 
 
 void draw() {
-    background(0, 0, 120);
+    colorMode(RGB, 255);
+    background(16, 16, 16);
 
     controlMouse.x = mouseX;
     controlMouse.y = mouseY;
@@ -41,31 +41,29 @@ void draw() {
     point(end.x, end.y);
 
     strokeWeight(1);
-    intermediatePoints = getQuadraticBezier(start, controlMouse, end, true);
-    // intermediatePoints = getCubicBezier(start, controlMouse, controlFixed, end, true);
-
-    // beginShape();
-    // stroke(200, 0, 0);
-    // strokeWeight(2);
-    // for (PVector p : intermediatePoints) {
-    //     vertex(p.x, p.y);
-    // }
-    // endShape();
-
-    // stroke(100, 100, 255);
-    // strokeWeight(1);
-    // bezier(start.x, start.y, controlMouse.x, controlMouse.y, controlFixed.x, controlFixed.y, end.x, end.y);
+    getQuadraticBezier(start, controlMouse, end, true, true);
+    // getCubicBezier(start, controlMouse, controlFixed, end, true, true);
 }
 
 
-PVector[] getQuadraticBezier(PVector start, PVector controlMouse, PVector end, boolean drawNet) {
+PVector[] getQuadraticBezier(PVector start, PVector controlMouse, PVector end,
+        boolean drawNet, boolean rainbow) {
     PVector[] result = new PVector[t.length];
+    if (rainbow) {
+        colorMode(HSB, t.length);
+    } else {
+        colorMode(RGB, 255);
+        stroke(255);
+    }
     for (int i = 0; i < t.length; i++) {
         float t_ = t[i];
         PVector p1 = PVector.lerp(start, controlMouse, t_);
         PVector p2 = PVector.lerp(controlMouse, end, t_);
         result[i] = PVector.lerp(p1, p2, t_);
         if (drawNet) {
+            if (rainbow) {
+                stroke(i, t.length, t.length);
+            }
             line(p1.x, p1.y, p2.x, p2.y);
         }
     }
@@ -73,16 +71,26 @@ PVector[] getQuadraticBezier(PVector start, PVector controlMouse, PVector end, b
 }
 
 
-PVector[] getCubicBezier(PVector start, PVector control1, PVector control2, PVector end, boolean drawNet) {
-    PVector[] first = getQuadraticBezier(start, control1, control2, false);
-    PVector[] second = getQuadraticBezier(control1, control2, end, false);
+PVector[] getCubicBezier(PVector start, PVector control1, PVector control2, PVector end,
+        boolean drawNet, boolean rainbow) {
+    PVector[] first = getQuadraticBezier(start, control1, control2, false, false);
+    PVector[] second = getQuadraticBezier(control1, control2, end, false, false);
     PVector[] result = new PVector[t.length];
+    if (rainbow) {
+        colorMode(HSB, t.length);
+    } else {
+        colorMode(RGB, 255);
+        stroke(255);
+    }
     for (int i = 0; i < t.length; i++) {
         float t_ = t[i];
         PVector p1 = first[i];
         PVector p2 = second[i];
         result[i] = PVector.lerp(p1, p2, t_);
         if (drawNet) {
+            if (rainbow) {
+                stroke(i, t.length, t.length);
+            }
             line(p1.x, p1.y, p2.x, p2.y);
         }
     }
