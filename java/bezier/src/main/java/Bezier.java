@@ -25,7 +25,7 @@ public class Bezier extends PApplet {
             widthArg = 1200;
             heightArg = 800;
         }
-        PApplet.main("Bezier");
+        PApplet.main(Bezier.class.getName());
     }
 
     @Override
