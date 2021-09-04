@@ -2,22 +2,25 @@
 // What is the secret behind the curve algorithm invented by a French auto engineer? CC 163: Bézier
 // https://www.youtube.com/watch?v=enNfb6p3j_g
 
+// These are interesting settings. Vary ZOOM from 1 to how high you want.
+// private static final int ZOOM = 12;
+// private static final double COMPLEX_WIDTH = Math.pow(10, -ZOOM);
+// private static final double CENTER_REAL = -0.743643887037151;
+// private static final double CENTER_IMAGINARY = 0.131825904205330;
+// private static final int MAX_ITERATIONS = 100 + 400 * (ZOOM - 1);
+
 import processing.core.PApplet;
 
 public class Mandelbrot extends PApplet {
-
-    private static int defaultWidth = 1200;
-    private static int defaultHeight = 800;
 
     private static final double COMPLEX_WIDTH = 3.5;
     private static final double CENTER_REAL = -0.5;
     private static final double CENTER_IMAGINARY = 0;
     private static final int MAX_ITERATIONS = 128;
-    // Usually THRESHOLD would be 2 but if I square it I can get rid of one expensive sqrt.
-    private static final int THRESHOLD = 4;
+    private static final int THRESHOLD = 2;
 
-    private double[] reals;
-    private double[] imaginaries;
+    private static int defaultWidth = 1200;
+    private static int defaultHeight = 800;
 
     public static void main(final String[] args) {
         if (args.length == 2) {
@@ -35,31 +38,14 @@ public class Mandelbrot extends PApplet {
     @Override
     public void setup() {
         noLoop();
-
-        final double complexHeight = COMPLEX_WIDTH / width * height;
-        final double realMin = CENTER_REAL - COMPLEX_WIDTH / 2;
-        final double imaginaryMin = CENTER_IMAGINARY - complexHeight / 2;
-        final double realIncrement = COMPLEX_WIDTH / (width - 1);
-        final double imaginaryIncrement = complexHeight / (height - 1);
-
-        reals = new double[width];
-        double real = realMin;
-        for (int i = 0; i < reals.length; i++) {
-            reals[i] = real;
-            real += realIncrement;
-        }
-
-        imaginaries = new double[height];
-        double imaginary = imaginaryMin;
-        for (int i = 0; i < imaginaries.length; i++) {
-            imaginaries[i] = imaginary;
-            imaginary += imaginaryIncrement;
-        }
     }
 
     @Override
     public void draw() {
         loadPixels();
+
+        final double[] reals = calculateReals();
+        final double[] imaginaries = calculateImaginaries();
 
         for (int x = 0; x < width; x++) {
             final double cReal = reals[x];
@@ -81,7 +67,9 @@ public class Mandelbrot extends PApplet {
                     n = MAX_ITERATIONS;
                 } else {
                     double abs = 0;
-                    while (n < MAX_ITERATIONS && abs < THRESHOLD) {
+                    // Square the threshold to get rid of the expensive square root.
+                    final int thresholdSquared = THRESHOLD * THRESHOLD;
+                    while (n < MAX_ITERATIONS && abs < thresholdSquared) {
                         imSquared = im * im;
                         im = 2 * re * im + cImaginary;  // must come before the next line because it modifies re
                         final double reSquared = re * re;
@@ -92,7 +80,7 @@ public class Mandelbrot extends PApplet {
                 }
 
                 if (n >= MAX_ITERATIONS) {
-                    pixels[x+ y * width] = color(0);
+                    pixels[x + y * width] = color(0);
                 } else {
                     pixels[x + y * width] = color(map(n, 0, MAX_ITERATIONS, 75, 255));
                 }
@@ -101,6 +89,29 @@ public class Mandelbrot extends PApplet {
         }
 
         updatePixels();
+    }
+
+    double[] calculateReals() {
+        final double realIncrement = COMPLEX_WIDTH / (width - 1);
+        final double[] reals = new double[width];
+        double real = CENTER_REAL - COMPLEX_WIDTH / 2;
+        for (int i = 0; i < reals.length; i++) {
+            reals[i] = real;
+            real += realIncrement;
+        }
+        return reals;
+    }
+
+    double[] calculateImaginaries() {
+        final double complexHeight = COMPLEX_WIDTH / width * height;
+        final double imaginaryIncrement = complexHeight / (height - 1);
+        final double[] imaginaries = new double[height];
+        double imaginary = CENTER_IMAGINARY - complexHeight / 2;
+        for (int i = 0; i < imaginaries.length; i++) {
+            imaginaries[i] = imaginary;
+            imaginary += imaginaryIncrement;
+        }
+        return imaginaries;
     }
 
 }
