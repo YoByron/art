@@ -1,3 +1,6 @@
+// https://en.wikipedia.org/wiki/Abelian_sandpile_model
+// https://www.youtube.com/watch?v=1MtEUErz7Gg
+
 import processing.core.PApplet;
 
 public class SandPiles extends PApplet {
@@ -5,12 +8,12 @@ public class SandPiles extends PApplet {
     private static int defaultWidth = 800;
     private static int defaultHeight = 800;
 
-    private static final int N_SAND = 10_000;
+    private static final int N_SAND = 100_000;
     private final int[] colors = new int[] {
-            color(255, 255, 255),
-            color(255, 255, 0),
-            color(255, 165, 0),
-            color(255, 0, 0)
+            color(10, 63, 255),
+            color(128, 190, 255),
+            color(255, 222, 0),
+            color(123, 0, 0)
     };
 
     public static void main(final String[] args) {
@@ -29,7 +32,6 @@ public class SandPiles extends PApplet {
     @Override
     public void setup() {
         noLoop();
-        background(255);
     }
 
     @Override
@@ -74,9 +76,8 @@ public class SandPiles extends PApplet {
         }
 
         for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = color(colors[pile[i]]);
+            pixels[i] = colors[pile[i]];
         }
         updatePixels();
     }
-
 }
