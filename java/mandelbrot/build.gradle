@@ -1,0 +1,21 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+application {
+    mainClass = 'Mandelbrot'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation files('libs/core.jar')
+}
