@@ -1,7 +1,3 @@
-// Inspired by the video by The Coding Train on Youtube with the title
-// What is the secret behind the curve algorithm invented by a French auto engineer? CC 163: Bézier
-// https://www.youtube.com/watch?v=enNfb6p3j_g
-
 import processing.core.PApplet;
 
 public class Template extends PApplet {
