@@ -8,7 +8,7 @@ public class SandPiles extends PApplet {
     private static int defaultWidth = 800;
     private static int defaultHeight = 800;
 
-    private static final int N_SAND = 100_000;
+    private static final int N_SAND = 250_000;
     private final int[] colors = new int[] {
             color(10, 63, 255),
             color(128, 190, 255),
@@ -32,13 +32,15 @@ public class SandPiles extends PApplet {
     @Override
     public void setup() {
         noLoop();
+        noStroke();
     }
 
     @Override
     public void draw() {
-        loadPixels();
-        final int[] pile = new int[pixels.length];
-        pile[pile.length / 2 - width / 2] = N_SAND;
+        final int widthHalf = width / 2;
+        final int heightHalf = height / 2;
+        final int[] pile = new int[widthHalf * heightHalf];
+        pile[pile.length / 2 - widthHalf / 2] = N_SAND;
 
         boolean finished = false;
         while (!finished) {
@@ -61,13 +63,13 @@ public class SandPiles extends PApplet {
                     }
 
                     // top neighbor
-                    final int topIndex = i - width;
+                    final int topIndex = i - widthHalf;
                     if (topIndex >= 0) {
                         pile[topIndex] += nForNeighbor;
                     }
 
                     // bottom neighbor
-                    final int bottomIndex = i + width;
+                    final int bottomIndex = i + widthHalf;
                     if (bottomIndex < pile.length - 1) {
                         pile[bottomIndex] += nForNeighbor;
                     }
@@ -75,9 +77,11 @@ public class SandPiles extends PApplet {
             }
         }
 
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = colors[pile[i]];
+        for (int i = 0; i < pile.length; i++) {
+            final int x = i % widthHalf;
+            final int y = i / heightHalf;
+            fill(colors[pile[i]]);
+            square(x + x, y + y, 2);
         }
-        updatePixels();
     }
 }
