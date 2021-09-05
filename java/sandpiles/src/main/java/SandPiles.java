@@ -3,10 +3,10 @@
 
 // TODO: Variable square size. That one changes the pile size, too. And it means I have to calculate
 //  stuff like twoX and twoY differently.
+// TODO: Make another sketch with 8 neighbors.
 
 import processing.core.PApplet;
 
-import java.util.Arrays;
 
 public class SandPiles extends PApplet {
 
@@ -14,6 +14,7 @@ public class SandPiles extends PApplet {
     private static int defaultHeight = 800;
 
     private static final boolean ANIMATE = true;
+    private static final boolean ANIMATE_FAST = true;
     private static final int N_SAND = 250_000;
     private final int[] colors = new int[] {
             color(10, 63, 255),
@@ -57,7 +58,13 @@ public class SandPiles extends PApplet {
     public void draw() {
         if (ANIMATE) {
             topple();
+            if (ANIMATE_FAST) {
+                for (int i = 0; i < 20; i++) {
+                    topple();
+                }
+            }
         } else {
+            // Run it to the end.
             boolean notFinished = true;
             while (notFinished) {
                 notFinished = topple();
