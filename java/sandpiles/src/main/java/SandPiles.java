@@ -1,14 +1,12 @@
 // https://en.wikipedia.org/wiki/Abelian_sandpile_model
 // https://www.youtube.com/watch?v=1MtEUErz7Gg
 
-// This approach uses two arrays to store the current and the next state of the pile.
-// Using only a single array is much faster but then the animation is no longer symmetric.
-// TODO: Use symmetry to iterate over only a quarter of the pile. Then be clever with
-//  the square coordinates so you don't have to copy the quarter to the other tree parts.
-// But that only works if I drop sand into that quarter. Someday I want to make it interactive,
-// so that the user can drop some sand by clicking the mouse. But then speed won't be so important.
+// TODO: Variable square size. That one changes the pile size, too. And it means I have to calculate
+//  stuff like twoX and twoY differently.
 
 import processing.core.PApplet;
+
+import java.util.Arrays;
 
 public class SandPiles extends PApplet {
 
@@ -47,16 +45,15 @@ public class SandPiles extends PApplet {
             noLoop();
         }
         noStroke();
-        pileWidth = width / 2;
-        pileHeight = height / 2;
+        pileWidth = width / 4;
+        pileHeight = height / 4;
         pile = new int[pileWidth * pileHeight];
         nextPile = pile.clone();
-        pile[pile.length / 2 - pileWidth / 2] = N_SAND;
+        pile[pile.length - 1] = N_SAND;
     }
 
     @Override
     public void draw() {
-
         if (ANIMATE) {
             topple();
         } else {
@@ -73,38 +70,64 @@ public class SandPiles extends PApplet {
             for (int y = 0; y < pileHeight; y++) {
                 final int n = pile[x + y * pileWidth];
                 fill(n < 4 ? colors[n] : color(255));
-                square(x + x, y + y, 2);
+                final int twoX = x + x;
+                final int twoY = y + y;
+                // top left quadrant
+                square(twoX, twoY, 2);
+
+                // top right quadrant
+                square(width - twoX - 2, twoY, 2);
+
+                // bottom left quadrant
+                square(twoX, height - twoY - 2, 2);
+
+                // bottom right quadrant
+                square(width - twoX - 2, height - twoY - 2, 2);
             }
         }
+
+        loadPixels();
+        println(Arrays.hashCode(pixels));
     }
 
     private boolean topple() {
         boolean notFinished = false;
-        for (int i = 0; i < pile.length; i++) {
-            final int n = pile[i];
-            if (n >= 4) {
-                notFinished = true;
-                final int nToDistribute = n / 4;
-                nextPile[i] = n % 4;
+        for (int x = 0; x < pileWidth; x++) {
+            for (int y = 0; y < pileHeight; y++) {
+                final int i = x + y * pileWidth;
+                final int n = pile[i];
+                if (n >= 4) {
+                    notFinished = true;
+                    final int nToDistribute = n / 4;
+                    nextPile[i] = n % 4;
 
-                // left neighbor
-                if (i > 0) {
-                    nextPile[i - 1] += nToDistribute;
-                }
+                    // left neighbor
+                    if (x > 0) {
+                        nextPile[i - 1] += nToDistribute;
+                    }
 
-                // right neighbor
-                if (i < pile.length - 1) {
-                    nextPile[i + 1] += nToDistribute;
-                }
+                    // right neighbor
+                    if (x < pileWidth - 1) {
+                        if (x == pileWidth - 2) {
+                            nextPile[i + 1] += nToDistribute + nToDistribute;
+                        } else {
+                            nextPile[i + 1] += nToDistribute;
+                        }
+                    }
 
-                // top neighbor
-                if (i >= pileWidth) {
-                    nextPile[i - pileWidth] += nToDistribute;
-                }
+                    // top neighbor
+                    if (y > 0) {
+                        nextPile[i - pileWidth] += nToDistribute;
+                    }
 
-                // bottom neighbor
-                if (i < pile.length - pileWidth) {
-                    nextPile[i + pileWidth] += nToDistribute;
+                    // bottom neighbor
+                    if (y < pileHeight - 1) {
+                        if (y == pileHeight - 2) {
+                            nextPile[i + pileWidth] += nToDistribute + nToDistribute;
+                        } else {
+                            nextPile[i + pileWidth] += nToDistribute;
+                        }
+                    }
                 }
             }
         }
