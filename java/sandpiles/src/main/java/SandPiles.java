@@ -13,7 +13,7 @@ public class SandPiles extends PApplet {
     private static int defaultWidth = 800;
     private static int defaultHeight = 800;
 
-    private static final boolean ANIMATE = false;
+    private static final boolean ANIMATE = true;
     private static final int N_SAND = 250_000;
     private final int[] colors = new int[] {
             color(10, 63, 255),
@@ -41,6 +41,7 @@ public class SandPiles extends PApplet {
 
     @Override
     public void setup() {
+        background(colors[0]);
         if (!ANIMATE) {
             noLoop();
         }
@@ -57,13 +58,10 @@ public class SandPiles extends PApplet {
         if (ANIMATE) {
             topple();
         } else {
-            final long startTime = System.nanoTime();
             boolean notFinished = true;
             while (notFinished) {
                 notFinished = topple();
             }
-            final long endTime = System.nanoTime();
-            System.out.println((endTime - startTime) / 1_000_000_000.0);
         }
 
         for (int x = 0; x < pileWidth; x++) {
@@ -72,22 +70,21 @@ public class SandPiles extends PApplet {
                 fill(n < 4 ? colors[n] : color(255));
                 final int twoX = x + x;
                 final int twoY = y + y;
+                final int rightX = width - twoX - 2 * 2;
+                final int bottomY = height - twoY - 2 * 2;
                 // top left quadrant
                 square(twoX, twoY, 2);
 
                 // top right quadrant
-                square(width - twoX - 2, twoY, 2);
+                square(rightX, twoY, 2);
 
                 // bottom left quadrant
-                square(twoX, height - twoY - 2, 2);
+                square(twoX, bottomY, 2);
 
                 // bottom right quadrant
-                square(width - twoX - 2, height - twoY - 2, 2);
+                square(rightX, bottomY, 2);
             }
         }
-
-        loadPixels();
-        println(Arrays.hashCode(pixels));
     }
 
     private boolean topple() {
