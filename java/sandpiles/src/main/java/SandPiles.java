@@ -1,12 +1,10 @@
 // https://en.wikipedia.org/wiki/Abelian_sandpile_model
 // https://www.youtube.com/watch?v=1MtEUErz7Gg
 
-// TODO: Variable square size. That one changes the pile size, too. And it means I have to calculate
-//  stuff like twoX and twoY differently.
 // TODO: Make another sketch with 8 neighbors.
+// TODO: Improve square_size = 1 by using the pixels array.
 
 import processing.core.PApplet;
-
 
 public class SandPiles extends PApplet {
 
@@ -16,6 +14,8 @@ public class SandPiles extends PApplet {
     private static final boolean ANIMATE = true;
     private static final boolean ANIMATE_FAST = true;
     private static final int N_SAND = 250_000;
+    private static final int SQUARE_SIZE = 2;
+    private static final int SQUARE_SIZE_TWICE = SQUARE_SIZE * 2;
     private final int[] colors = new int[] {
             color(10, 63, 255),
             color(128, 190, 255),
@@ -47,8 +47,8 @@ public class SandPiles extends PApplet {
             noLoop();
         }
         noStroke();
-        pileWidth = width / 4;
-        pileHeight = height / 4;
+        pileWidth = width / SQUARE_SIZE_TWICE;
+        pileHeight = height / SQUARE_SIZE_TWICE;
         pile = new int[pileWidth * pileHeight];
         nextPile = pile.clone();
         pile[pile.length - 1] = N_SAND;
@@ -64,7 +64,6 @@ public class SandPiles extends PApplet {
                 }
             }
         } else {
-            // Run it to the end.
             boolean notFinished = true;
             while (notFinished) {
                 notFinished = topple();
@@ -75,21 +74,18 @@ public class SandPiles extends PApplet {
             for (int y = 0; y < pileHeight; y++) {
                 final int n = pile[x + y * pileWidth];
                 fill(n < 4 ? colors[n] : color(255));
-                final int twoX = x + x;
-                final int twoY = y + y;
-                final int rightX = width - twoX - 2 * 2;
-                final int bottomY = height - twoY - 2 * 2;
+                final int squareX = x * SQUARE_SIZE;
+                final int squareY = y * SQUARE_SIZE;
+                final int rightX = width - squareX - SQUARE_SIZE_TWICE;
+                final int bottomY = height - squareY - SQUARE_SIZE_TWICE;
                 // top left quadrant
-                square(twoX, twoY, 2);
-
+                square(squareX, squareY, SQUARE_SIZE);
                 // top right quadrant
-                square(rightX, twoY, 2);
-
+                square(rightX, squareY, SQUARE_SIZE);
                 // bottom left quadrant
-                square(twoX, bottomY, 2);
-
+                square(squareX, bottomY, SQUARE_SIZE);
                 // bottom right quadrant
-                square(rightX, bottomY, 2);
+                square(rightX, bottomY, SQUARE_SIZE);
             }
         }
     }
